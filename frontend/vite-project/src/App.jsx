@@ -68,6 +68,23 @@ const App = () => {
     }
   };
 
-
-
+  return (
+    <div>
+      <h1>Crud Node y React usando Vite</h1>
+      <input type="text" value={newName} onChange={(e) => setNewName(e.target.value)} placeholder="Nombre" />
+      <input type="text" value={newEmail} onChange={(e)=> setNewEmail(e.target.value)} placeholder="Email"/>
+      <button onClick={handleCreate}>Agregar</button>
+      <ul>
+        {users.map((user) => (
+          <li key={user.id}>
+            <span style={{marginRight: '10px'}}>{user.id}</span>
+            <span style={{marginRight: '10px'}}>{user.nombre}</span>
+            <span style={{marginRight: '10px'}}>{user.email}</span>
+            <button onClick={() => handleDelete(user.id)}>Eliminar</button>
+            <button onClick={() => handleUpdate(user.id, user.nombre, user.email)}>Actualizar</button>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
 };
