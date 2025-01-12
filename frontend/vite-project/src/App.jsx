@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"; //*Hooks de react
 import axios from "axios"; //*Axios para hacer peticiones HTTP
 
-const BASE_URL = "http://localhost:3000/usuarios/";
+const BASE_URL = "http://localhost:3001/usuarios/";
 
 const App = () => {
   const [users, setUsers] = useState([]); //*Estado para almacenar los usuarios
@@ -88,3 +88,5 @@ const App = () => {
     </div>
   );
 };
+
+export default App;//*Exportamos el componente App
