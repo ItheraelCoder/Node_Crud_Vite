@@ -22,66 +22,56 @@ db.connect((err) => { if (err) throw err; console.log('Database connected') });
 
 //metodo para listar usuarios de la base de datos
 app.get('/users', (req, res) => {
-    db.query('SELECT * FROM usuarios', (err, result) => { if (err) throw err; res.json(result) })
+    db.query('SELECT * FROM usuarios', (err, result) => { if (err) res.status(500).send({error:'Error al obtener los usuarios'}); res.json(result) })
 })
 
 //metodo para agregar usuarios a la base de datos
 app.post('/users/add', (req, res) => {
     const { nombre, email } = req.body;
-    const query = `INSERT INTO usuarios (nombre, email) VALUES ('${nombre}', '${email}')`;
-    db.query(query, [nombre, email], (err, result) => {
+    const query = 'INSERT INTO usuarios (nombre, email) VALUES (?, ?)';
+    db.query(query, [nombre, email], (err, results) => {
         if (err) {
             res.status(500).send({ error: 'Error al agregar usuario' });
         } else {
-            res.status(201).send.json(
-                {
-                    message: 'Usuario agregado correctamente',
-                    id: result.insertId,
-                    nombre,
-                    email
-                }
-            );
+            res.status(201).json({
+                id: results.insertId,
+                nombre,
+                email
+            });
         }
     })
 });
 
-//metodo para eliminar usuarios de la base de datos
+//metodo para actualizar usuarios de la base de datos
 app.put('/users/update/:id', (req, res) => {
-    const id = req.params.id;
+    const id = req.params.id; // Corrección aquí
     const { nombre, email } = req.body;
-    const query = `UPDATE usuarios SET nombre = '${nombre}', email = '${email}' WHERE id = ${id}`;
-    db.query(query, [nombre, email], (err, result) => {
+    const query = 'UPDATE usuarios SET nombre = ?, email = ? WHERE id = ?';
+    db.query(query, [nombre, email, id], (err, result) => {
         if (err) {
             res.status(500).send({ error: 'Error al actualizar usuario' });
         } else {
-            res.status(200).send.json(
-                {
-                    message: 'Usuario actualizado correctamente',
-                    id,
-                    nombre,
-                    email
-                }
-            );
+            res.status(200).json({
+                message: 'Usuario actualizado correctamente',
+                id,
+                nombre,
+                email
+            });
         }
-    })
+    });
 });
 
 //metodo para eliminar usuarios de la base de datos
 app.delete('/users/delete/:id', (req, res) => {
     const id = req.params.id;
-    const query = `DELETE FROM usuarios WHERE id = ${id}`;
-    db.query(query, (err, result) => {
+    const query = 'DELETE FROM usuarios WHERE id = ?'; // Usar parámetros preparados
+    db.query(query, [id], (err, result) => { // Solo pasar id una vez
         if (err) {
             res.status(500).send({ error: 'Error al eliminar usuario' });
         } else {
-            res.send.json(
-                {
-                    message: 'Usuario eliminado correctamente',
-                    id
-                }
-            );
+            res.status(204).send();
         }
-    })
+    });
 });
 
 const PORT = process.env.PORT || 3001;

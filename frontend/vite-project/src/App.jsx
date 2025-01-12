@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"; //*Hooks de react
 import axios from "axios"; //*Axios para hacer peticiones HTTP
 
-const BASE_URL = "http://localhost:3001/usuarios/";
+const BASE_URL = "http://localhost:3001/users";
 
 const App = () => {
   const [users, setUsers] = useState([]); //*Estado para almacenar los usuarios
@@ -13,7 +13,7 @@ const App = () => {
     axios.get(`${BASE_URL}`)
       .then((res) => {
         setUsers(res.data);
-        console.log(res.data);
+        // console.log(res.data);
       })
       .catch((err) => {
         console.log('Error al obtener los usuarios', err);
@@ -22,8 +22,8 @@ const App = () => {
 
   //*Función para agregar un usuario
   const handleCreate = () => {
-    if (nombre.trim() && email.trim()) {
-      axios.post(`${BASE_URL}add`, {
+    if (newName.trim() && newEmail.trim()) {
+      axios.post(`${BASE_URL}/add`, {
         nombre: newName,
         email: newEmail
       }).then((res) => {
@@ -38,7 +38,7 @@ const App = () => {
 
   //*Función para eliminar un usuario
   const handleDelete = (id) => {
-    axios.delete(`${BASE_URL}delete/${id}`)
+    axios.delete(`${BASE_URL}/delete/${id}`)
       .then(() => {
         setUsers((prevUsers) => prevUsers.filter((user) => user.id !== id));
       })
@@ -52,18 +52,26 @@ const App = () => {
     const newName = prompt('Ingrese el nuevo nombre', nombre);
     const newEmail = prompt('Ingrese el nuevo email', email);
 
-    if (newName !== nombre && newEmail !== email) {
-      axios.put(`${BASE_URL}update/${id}`, {
+    // Verificar que los valores no sean null y que hayan cambiado
+    if (newName && newEmail && (newName !== nombre || newEmail !== email)) {
+      axios.put(`${BASE_URL}/update/${id}`, {  
         nombre: newName,
         email: newEmail
-      }).then(() => {
-        setUsers((prevUsers) => {
-          prevUsers.map((user) => {
-            user.id === id ? { ...user, nombre: newName, email: newEmail } : user
-          })
-        });
-      }).catch((err) => {
-        console.log('Error al actualizar usuario', err);
+      })
+      .then(() => {
+        setUsers(prevUsers => 
+          prevUsers.map(user => 
+            user.id === id 
+              ? { ...user, nombre: newName, email: newEmail } 
+              : user
+          )
+        );
+        // Opcional: Mostrar mensaje de éxito
+        alert('Usuario actualizado correctamente');
+      })
+      .catch((err) => {
+        console.error('Error al actualizar usuario:', err);
+        alert('Error al actualizar usuario');
       });
     }
   };
